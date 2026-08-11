@@ -1,5 +1,6 @@
 package tn.esprit.securedrop.service;
 
+import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobContainerClient;
 import com.azure.storage.blob.models.BlobHttpHeaders;
@@ -7,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 @Service
 public class BlobStorageService {
@@ -27,15 +27,12 @@ public class BlobStorageService {
         BlobClient blobClient =
                 blobContainerClient.getBlobClient(blobName);
 
-        try (InputStream inputStream = file.getInputStream()) {
+        try {
 
-            blobClient
-                    .getBlockBlobClient()
-                    .upload(
-                            inputStream,
-                            file.getSize(),
-                            true
-                    );
+            BinaryData data =
+                    BinaryData.fromBytes(file.getBytes());
+
+            blobClient.upload(data, true);
 
             if (file.getContentType() != null
                     && !file.getContentType().isBlank()) {

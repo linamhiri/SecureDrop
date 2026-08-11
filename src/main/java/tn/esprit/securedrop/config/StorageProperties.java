@@ -7,9 +7,28 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "securedrop.azure.storage")
 public class StorageProperties {
 
+    private String connectionString;
     private String accountName;
-    private String containerName;
+
+    private String quarantineContainer;
+    private String cleanContainer;
+    private String infectedContainer;
+
     private String scanQueueName;
+    private String metadataTableName;
+
+
+    // =========================
+    // CONNECTION
+    // =========================
+
+    public String getConnectionString() {
+        return connectionString;
+    }
+
+    public void setConnectionString(String connectionString) {
+        this.connectionString = connectionString;
+    }
 
     public String getAccountName() {
         return accountName;
@@ -19,13 +38,39 @@ public class StorageProperties {
         this.accountName = accountName;
     }
 
-    public String getContainerName() {
-        return containerName;
+
+    // =========================
+    // BLOB CONTAINERS
+    // =========================
+
+    public String getQuarantineContainer() {
+        return quarantineContainer;
     }
 
-    public void setContainerName(String containerName) {
-        this.containerName = containerName;
+    public void setQuarantineContainer(String quarantineContainer) {
+        this.quarantineContainer = quarantineContainer;
     }
+
+    public String getCleanContainer() {
+        return cleanContainer;
+    }
+
+    public void setCleanContainer(String cleanContainer) {
+        this.cleanContainer = cleanContainer;
+    }
+
+    public String getInfectedContainer() {
+        return infectedContainer;
+    }
+
+    public void setInfectedContainer(String infectedContainer) {
+        this.infectedContainer = infectedContainer;
+    }
+
+
+    // =========================
+    // QUEUE
+    // =========================
 
     public String getScanQueueName() {
         return scanQueueName;
@@ -35,11 +80,46 @@ public class StorageProperties {
         this.scanQueueName = scanQueueName;
     }
 
+
+    // =========================
+    // TABLE
+    // =========================
+
+    public String getMetadataTableName() {
+        return metadataTableName;
+    }
+
+    public void setMetadataTableName(String metadataTableName) {
+        this.metadataTableName = metadataTableName;
+    }
+
+
+    // =========================
+    // LOCAL / AZURE
+    // =========================
+
+    public boolean isLocal() {
+        return connectionString != null
+                && !connectionString.isBlank();
+    }
+
+
+    // =========================
+    // REAL AZURE ENDPOINTS
+    // =========================
+
     public String getBlobEndpoint() {
-        return "https://" + accountName + ".blob.core.windows.net";
+        return "https://" + accountName
+                + ".blob.core.windows.net";
     }
 
     public String getQueueEndpoint() {
-        return "https://" + accountName + ".queue.core.windows.net";
+        return "https://" + accountName
+                + ".queue.core.windows.net";
+    }
+
+    public String getTableEndpoint() {
+        return "https://" + accountName
+                + ".table.core.windows.net";
     }
 }

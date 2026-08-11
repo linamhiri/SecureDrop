@@ -137,6 +137,16 @@
 
 
         <!-- ========================= -->
+        <!-- AZURE TABLE STORAGE       -->
+        <!-- ========================= -->
+
+        <dependency>
+            <groupId>com.azure</groupId>
+            <artifactId>azure-data-tables</artifactId>
+        </dependency>
+
+
+        <!-- ========================= -->
         <!-- AZURE IDENTITY / RBAC     -->
         <!-- ========================= -->
 

@@ -80,7 +80,7 @@ public class FileService {
                 new ScanRequest(
                         fileId,
                         blobName,
-                        storageProperties.getContainerName(),
+                        storageProperties.getQuarantineContainer(),
                         Instant.now()
                 );
 
