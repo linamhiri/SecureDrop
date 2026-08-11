@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SecureDrop - Files</title>
+</head>
+
+<body>
+
+<h1>SecureDrop</h1>
+
+<nav>
+    <a th:href="@{/files}">Files</a>
+    |
+    <a th:href="@{/files/upload}">Upload</a>
+</nav>
+
+<hr>
+
+<h2>Uploaded files</h2>
+
+<div th:if="${successMessage}">
+    <p th:text="${successMessage}"></p>
+</div>
+
+<div th:if="${errorMessage}">
+    <p th:text="${errorMessage}"></p>
+</div>
+
+<div th:if="${#lists.isEmpty(files)}">
+
+    <p>No files uploaded yet.</p>
+
+    <a th:href="@{/files/upload}">
+        Upload your first file
+    </a>
+
+</div>
+
+<table th:unless="${#lists.isEmpty(files)}"
+       border="1"
+       cellpadding="8">
+
+    <thead>
+
+    <tr>
+        <th>File</th>
+        <th>Size</th>
+        <th>Status</th>
+        <th>Uploaded</th>
+        <th>Details</th>
+    </tr>
+
+    </thead>
+
+    <tbody>
+
+    <tr th:each="file : ${files}">
+
+        <td th:text="${file.originalFilename}">
+            example.pdf
+        </td>
+
+        <td th:text="${file.size + ' bytes'}">
+            100 bytes
+        </td>
+
+        <td th:text="${file.status}">
+            PENDING_SCAN
+        </td>
+
+        <td th:text="${file.uploadedAt}">
+            date
+        </td>
+
+        <td>
+
+            <a th:href="@{/files/{id}(id=${file.id})}">
+                View
+            </a>
+
+        </td>
+
+    </tr>
+
+    </tbody>
+
+</table>
+
+</body>
+</html>

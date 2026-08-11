@@ -1,0 +1,36 @@
+# Maven
+target/
+*.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# VS Code
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Azure / local credentials
+.azure/
+
+# Temporary files
+*.tmp
+*.swp
