@@ -1,23 +1,22 @@
 package tn.esprit.securedrop.service;
 
 import com.azure.storage.queue.QueueClient;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import tn.esprit.securedrop.dto.ScanRequest;
 import org.springframework.stereotype.Service;
+import tn.esprit.securedrop.dto.ScanRequest;
+import tools.jackson.databind.json.JsonMapper;
 
 @Service
 public class ScanQueueService {
 
     private final QueueClient scanQueueClient;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     public ScanQueueService(
             QueueClient scanQueueClient,
-            ObjectMapper objectMapper) {
+            JsonMapper jsonMapper) {
 
         this.scanQueueClient = scanQueueClient;
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
     }
 
     public void enqueue(ScanRequest scanRequest) {
@@ -25,14 +24,14 @@ public class ScanQueueService {
         try {
 
             String message =
-                    objectMapper.writeValueAsString(scanRequest);
+                    jsonMapper.writeValueAsString(scanRequest);
 
             scanQueueClient.sendMessage(message);
 
-        } catch (JsonProcessingException exception) {
+        } catch (Exception exception) {
 
             throw new IllegalStateException(
-                    "Unable to create scan request.",
+                    "Unable to create or send scan request.",
                     exception
             );
         }
