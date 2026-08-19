@@ -7,10 +7,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- ========================= -->
-    <!-- SPRING BOOT               -->
-    <!-- ========================= -->
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -18,31 +14,22 @@
         <relativePath/>
     </parent>
 
-
-    <!-- ========================= -->
-    <!-- PROJECT INFORMATION       -->
-    <!-- ========================= -->
-
     <groupId>tn.esprit</groupId>
-    <artifactId>SecureDrop</artifactId>
+    <artifactId>securedrop</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <name>SecureDrop</name>
-    <description>SecureDrop</description>
+    <description>SecureDrop secure file transfer platform</description>
 
-
-    <!-- ========================= -->
-    <!-- JAVA                      -->
-    <!-- ========================= -->
+    <modules>
+        <module>portal</module>
+        <module>scanner</module>
+    </modules>
 
     <properties>
         <java.version>17</java.version>
     </properties>
-
-
-    <!-- ========================= -->
-    <!-- AZURE SDK VERSION MGMT    -->
-    <!-- ========================= -->
 
     <dependencyManagement>
         <dependencies>
@@ -57,140 +44,5 @@
 
         </dependencies>
     </dependencyManagement>
-
-
-    <!-- ========================= -->
-    <!-- DEPENDENCIES              -->
-    <!-- ========================= -->
-
-    <dependencies>
-
-
-        <!-- ========================= -->
-        <!-- CORE SPRING BOOT          -->
-        <!-- ========================= -->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
-
-        <!-- ========================= -->
-        <!-- SPRING MVC / WEB          -->
-        <!-- ========================= -->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webmvc</artifactId>
-        </dependency>
-
-
-        <!-- ========================= -->
-        <!-- THYMELEAF                 -->
-        <!-- ========================= -->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-
-
-        <!-- ========================= -->
-        <!-- SPRING SECURITY           -->
-        <!-- ========================= -->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
-
-        <!-- ========================= -->
-        <!-- VALIDATION                -->
-        <!-- ========================= -->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-
-
-        <!-- ========================= -->
-        <!-- AZURE BLOB STORAGE        -->
-        <!-- ========================= -->
-
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-storage-blob</artifactId>
-        </dependency>
-
-
-        <!-- ========================= -->
-        <!-- AZURE STORAGE QUEUE       -->
-        <!-- ========================= -->
-
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-storage-queue</artifactId>
-        </dependency>
-
-
-        <!-- ========================= -->
-        <!-- AZURE TABLE STORAGE       -->
-        <!-- ========================= -->
-
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-data-tables</artifactId>
-        </dependency>
-
-
-        <!-- ========================= -->
-        <!-- AZURE IDENTITY / RBAC     -->
-        <!-- ========================= -->
-
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-identity</artifactId>
-        </dependency>
-
-
-        <!-- ========================= -->
-        <!-- TESTS                     -->
-        <!-- ========================= -->
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-
-    </dependencies>
-
-
-    <!-- ========================= -->
-    <!-- BUILD                     -->
-    <!-- ========================= -->
-
-    <build>
-
-        <plugins>
-
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
-        </plugins>
-
-    </build>
 
 </project>

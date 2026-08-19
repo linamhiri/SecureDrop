@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SecureDrop - File Details</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/securedrop.css}">
+</head>
+
+<body>
+
+<header class="app-header">
+
+    <div class="header-inner">
+
+        <a class="brand"
+           th:href="@{/files}">
+
+            <span class="brand-mark">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4z"/>
+
+                </svg>
+
+            </span>
+
+            SecureDrop
+        </a>
+
+        <nav class="main-nav">
+
+            <a class="nav-link active"
+               th:href="@{/files}">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="M3 6h6l2 2h10v10H3z"/>
+
+                </svg>
+
+                Files
+            </a>
+
+            <a class="nav-link"
+               th:href="@{/files/upload}">
+
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
+
+                    <path d="M12 16V4"/>
+                    <path d="M8 8l4-4 4 4"/>
+                    <path d="M4 14v5h16v-5"/>
+
+                </svg>
+
+                Upload
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main class="page-container">
+
+    <div class="page-heading">
+
+        <div>
+
+            <h1>File details</h1>
+
+            <p th:text="${file.originalFilename}">
+                file.pdf
+            </p>
+
+        </div>
+
+        <a class="button button-outline"
+           th:href="@{/files}">
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+
+                <path d="M19 12H5"/>
+                <path d="M11 6l-6 6 6 6"/>
+
+            </svg>
+
+            Back to files
+        </a>
+
+    </div>
+
+
+    <div th:if="${successMessage}"
+         class="alert alert-success"
+         th:text="${successMessage}">
+    </div>
+
+
+    <div class="details-grid">
+
+        <!-- FILE INFORMATION -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+                File information
+            </h2>
+
+            <dl class="detail-list">
+
+                <div class="detail-row">
+
+                    <dt>File name</dt>
+
+                    <dd th:text="${file.originalFilename}">
+                        file.pdf
+                    </dd>
+
+                </div>
+
+                <div class="detail-row">
+
+                    <dt>Content type</dt>
+
+                    <dd th:text="${file.contentType}">
+                        application/pdf
+                    </dd>
+
+                </div>
+
+                <div class="detail-row">
+
+                    <dt>Size</dt>
+
+                    <dd th:text="${file.size + ' bytes'}">
+                        100 bytes
+                    </dd>
+
+                </div>
+
+                <div class="detail-row">
+
+                    <dt>Uploaded</dt>
+
+                    <dd th:text="${file.uploadedAt}">
+                        date
+                    </dd>
+
+                </div>
+
+                <div class="detail-row">
+
+                    <dt>File ID</dt>
+
+                    <dd th:text="${file.id}">
+                        id
+                    </dd>
+
+                </div>
+
+                <div class="detail-row">
+
+                    <dt>Blob name</dt>
+
+                    <dd th:text="${file.blobName}">
+                        blob
+                    </dd>
+
+                </div>
+
+            </dl>
+
+        </section>
+
+
+        <!-- SECURITY SCAN -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+                Security scan
+            </h2>
+
+            <p>
+
+                <strong>Status:</strong>
+
+                <span class="status"
+                      th:classappend="${
+                        file.status.name() == 'CLEAN' ? ' status-clean' :
+                        file.status.name() == 'INFECTED' ? ' status-infected' :
+                        file.status.name() == 'SCANNING' ? ' status-scanning' :
+                        file.status.name() == 'ERROR' ? ' status-error' :
+                        file.status.name() == 'UPLOADED' ? ' status-uploaded' :
+                        ' status-pending'
+                      }"
+                      th:text="${file.status}">
+                    PENDING_SCAN
+                </span>
+
+            </p>
+
+
+            <div th:if="${file.status.name() == 'UPLOADED'}"
+                 class="scan-message uploaded">
+
+                File uploaded successfully. The security scan is being prepared.
+
+            </div>
+
+
+            <div th:if="${file.status.name() == 'PENDING_SCAN'}"
+                 class="scan-message pending">
+
+                The file is waiting in quarantine for the security scanner.
+
+            </div>
+
+
+            <div th:if="${file.status.name() == 'SCANNING'}"
+                 class="scan-message scanning">
+
+                The file is currently being analyzed by the security scanner.
+
+            </div>
+
+
+            <div th:if="${file.status.name() == 'CLEAN'}"
+                 class="scan-message clean">
+
+                The security scan completed successfully.
+                No threat was detected and the file has been approved.
+
+            </div>
+
+
+            <div th:if="${file.status.name() == 'INFECTED'}"
+                 class="scan-message infected">
+
+                A threat was detected.
+                The file has been isolated and is not considered safe.
+
+            </div>
+
+
+            <div th:if="${file.status.name() == 'ERROR'}"
+                 class="scan-message error">
+
+                An error occurred while processing this file.
+                The scan may be retried automatically.
+
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+</body>
+</html>
