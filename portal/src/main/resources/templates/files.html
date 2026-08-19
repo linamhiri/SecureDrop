@@ -4,90 +4,240 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>SecureDrop - Files</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/securedrop.css}">
 </head>
 
 <body>
 
-<h1>SecureDrop</h1>
+<header class="app-header">
 
-<nav>
-    <a th:href="@{/files}">Files</a>
-    |
-    <a th:href="@{/files/upload}">Upload</a>
-</nav>
+    <div class="header-inner">
 
-<hr>
+        <a class="brand"
+           th:href="@{/files}">
 
-<h2>Uploaded files</h2>
+            <span class="brand-mark">
 
-<div th:if="${successMessage}">
-    <p th:text="${successMessage}"></p>
-</div>
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
 
-<div th:if="${errorMessage}">
-    <p th:text="${errorMessage}"></p>
-</div>
+                    <path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4z"/>
 
-<div th:if="${#lists.isEmpty(files)}">
+                </svg>
 
-    <p>No files uploaded yet.</p>
+            </span>
 
-    <a th:href="@{/files/upload}">
-        Upload your first file
-    </a>
+            SecureDrop
+        </a>
 
-</div>
+        <nav class="main-nav">
 
-<table th:unless="${#lists.isEmpty(files)}"
-       border="1"
-       cellpadding="8">
+            <a class="nav-link active"
+               th:href="@{/files}">
 
-    <thead>
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
 
-    <tr>
-        <th>File</th>
-        <th>Size</th>
-        <th>Status</th>
-        <th>Uploaded</th>
-        <th>Details</th>
-    </tr>
+                    <path d="M3 6h6l2 2h10v10H3z"/>
 
-    </thead>
+                </svg>
 
-    <tbody>
-
-    <tr th:each="file : ${files}">
-
-        <td th:text="${file.originalFilename}">
-            example.pdf
-        </td>
-
-        <td th:text="${file.size + ' bytes'}">
-            100 bytes
-        </td>
-
-        <td th:text="${file.status}">
-            PENDING_SCAN
-        </td>
-
-        <td th:text="${file.uploadedAt}">
-            date
-        </td>
-
-        <td>
-
-            <a th:href="@{/files/{id}(id=${file.id})}">
-                View
+                Files
             </a>
 
-        </td>
+            <a class="nav-link"
+               th:href="@{/files/upload}">
 
-    </tr>
+                <svg viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2">
 
-    </tbody>
+                    <path d="M12 16V4"/>
+                    <path d="M8 8l4-4 4 4"/>
+                    <path d="M4 14v5h16v-5"/>
 
-</table>
+                </svg>
+
+                Upload
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main class="page-container">
+
+    <div class="page-heading">
+
+        <div>
+            <h1>Uploaded files</h1>
+
+            <p>
+                Review uploaded files and their security scan status.
+            </p>
+        </div>
+
+        <a class="button button-primary"
+           th:href="@{/files/upload}">
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+
+                <path d="M12 5v14"/>
+                <path d="M5 12h14"/>
+
+            </svg>
+
+            Upload file
+        </a>
+
+    </div>
+
+
+    <div th:if="${successMessage}"
+         class="alert alert-success"
+         th:text="${successMessage}">
+    </div>
+
+    <div th:if="${errorMessage}"
+         class="alert alert-error"
+         th:text="${errorMessage}">
+    </div>
+
+
+    <div th:if="${#lists.isEmpty(files)}"
+         class="card empty-state">
+
+        <div class="empty-icon">
+
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
+
+                <path d="M3 6h6l2 2h10v10H3z"/>
+
+            </svg>
+
+        </div>
+
+        <h2>No files uploaded yet</h2>
+
+        <p>
+            Upload a file to start the secure scanning process.
+        </p>
+
+        <a class="button button-primary"
+           th:href="@{/files/upload}">
+            Upload your first file
+        </a>
+
+    </div>
+
+
+    <div th:unless="${#lists.isEmpty(files)}"
+         class="card table-card">
+
+        <div class="table-wrapper">
+
+            <table class="files-table">
+
+                <thead>
+
+                <tr>
+                    <th>File</th>
+                    <th>Size</th>
+                    <th>Status</th>
+                    <th>Uploaded</th>
+                    <th>Details</th>
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                <tr th:each="file : ${files}">
+
+                    <td class="file-name"
+                        th:text="${file.originalFilename}">
+                        example.pdf
+                    </td>
+
+                    <td class="file-size"
+                        th:text="${file.size + ' bytes'}">
+                        100 bytes
+                    </td>
+
+                    <td>
+
+                        <span class="status"
+                              th:classappend="${
+                                file.status.name() == 'CLEAN' ? ' status-clean' :
+                                file.status.name() == 'INFECTED' ? ' status-infected' :
+                                file.status.name() == 'SCANNING' ? ' status-scanning' :
+                                file.status.name() == 'ERROR' ? ' status-error' :
+                                file.status.name() == 'UPLOADED' ? ' status-uploaded' :
+                                ' status-pending'
+                              }"
+                              th:text="${file.status}">
+                            PENDING_SCAN
+                        </span>
+
+                    </td>
+
+                    <td class="file-date"
+                        th:text="${file.uploadedAt}">
+                        date
+                    </td>
+
+                    <td>
+
+                        <a class="button button-outline"
+                           th:href="@{/files/{id}(id=${file.id})}">
+
+                            <svg viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2">
+
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/>
+                                <circle cx="12"
+                                        cy="12"
+                                        r="2.5"/>
+
+                            </svg>
+
+                            View
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</main>
 
 </body>
 </html>
