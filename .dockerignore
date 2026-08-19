@@ -1,0 +1,27 @@
+# Maven build output
+**/target/
+
+# Git
+.git/
+.gitignore
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local temporary files
+tmp/
+temp/
+
+# Docker Compose local overrides
+docker-compose.override.yml

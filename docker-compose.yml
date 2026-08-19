@@ -1,5 +1,8 @@
 services:
 
+  # =========================================================
+  # Azure Storage Emulator
+  # =========================================================
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
     container_name: securedrop-azurite
@@ -22,6 +25,10 @@ services:
 
     restart: unless-stopped
 
+
+  # =========================================================
+  # Antivirus
+  # =========================================================
   clamav:
     image: clamav/clamav:1.5
     container_name: securedrop-clamav
@@ -33,6 +40,66 @@ services:
       - clamav-data:/var/lib/clamav
 
     restart: unless-stopped
+
+
+  # =========================================================
+  # SecureDrop Portal
+  # =========================================================
+  portal:
+    build:
+      context: .
+      dockerfile: portal/Dockerfile
+
+    image: securedrop-portal:local
+    container_name: securedrop-portal
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      SECUREDROP_AZURE_STORAGE_CONNECTION_STRING: >-
+        DefaultEndpointsProtocol=http;
+        AccountName=devstoreaccount1;
+        AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;
+        BlobEndpoint=http://azurite:10000/devstoreaccount1;
+        QueueEndpoint=http://azurite:10001/devstoreaccount1;
+        TableEndpoint=http://azurite:10002/devstoreaccount1;
+
+    depends_on:
+      - azurite
+
+    restart: unless-stopped
+
+
+  # =========================================================
+  # SecureDrop Scanner
+  # =========================================================
+  scanner:
+    build:
+      context: .
+      dockerfile: scanner/Dockerfile
+
+    image: securedrop-scanner:local
+    container_name: securedrop-scanner
+
+    environment:
+      SECUREDROP_STORAGE_CONNECTION_STRING: >-
+        DefaultEndpointsProtocol=http;
+        AccountName=devstoreaccount1;
+        AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;
+        BlobEndpoint=http://azurite:10000/devstoreaccount1;
+        QueueEndpoint=http://azurite:10001/devstoreaccount1;
+        TableEndpoint=http://azurite:10002/devstoreaccount1;
+
+      SCANNER_CLAMAV_HOST: clamav
+      SCANNER_CLAMAV_PORT: 3310
+
+    depends_on:
+      - azurite
+      - clamav
+
+    restart: unless-stopped
+
 
 volumes:
   azurite-data:
