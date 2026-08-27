@@ -1,0 +1,122 @@
+name: SecureDrop Azure Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/scanner-azure-auth
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ACR_NAME: securedropacr2026
+  ACR_SERVER: securedropacr2026.azurecr.io
+  RESOURCE_GROUP: securedrop-rg
+  PORTAL_APP: securedrop-portal
+  SCANNER_JOB: securedrop-scanner
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # =============================
+      # AZURE AUTHENTICATION - OIDC
+      # =============================
+
+      - name: Login to Azure with OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      # =============================
+      # ACR LOGIN
+      # =============================
+
+      - name: Login to Azure Container Registry
+        run: az acr login --name $ACR_NAME
+
+      # =============================
+      # BUILD PORTAL
+      # =============================
+
+      - name: Build Portal image
+        run: |
+          docker build \
+            -f portal/Dockerfile \
+            -t $ACR_SERVER/securedrop-portal:${{ github.sha }} \
+            .
+
+      # =============================
+      # BUILD SCANNER + CLAMAV
+      # =============================
+
+      - name: Build Scanner image
+        run: |
+          docker build \
+            -f scanner/Dockerfile.azure \
+            -t $ACR_SERVER/securedrop-scanner:${{ github.sha }} \
+            .
+
+      # =============================
+      # PUSH IMAGES
+      # =============================
+
+      - name: Push Portal image
+        run: |
+          docker push \
+            $ACR_SERVER/securedrop-portal:${{ github.sha }}
+
+      - name: Push Scanner image
+        run: |
+          docker push \
+            $ACR_SERVER/securedrop-scanner:${{ github.sha }}
+
+      # =============================
+      # DEPLOY PORTAL
+      # =============================
+
+      - name: Deploy Portal
+        run: |
+          az containerapp update \
+            --name $PORTAL_APP \
+            --resource-group $RESOURCE_GROUP \
+            --image $ACR_SERVER/securedrop-portal:${{ github.sha }}
+
+      # =============================
+      # DEPLOY SCANNER JOB
+      # =============================
+
+      - name: Deploy Scanner Job
+        run: |
+          az containerapp job update \
+            --name $SCANNER_JOB \
+            --resource-group $RESOURCE_GROUP \
+            --image $ACR_SERVER/securedrop-scanner:${{ github.sha }}
+
+      # =============================
+      # VERIFY DEPLOYMENT
+      # =============================
+
+      - name: Verify Portal deployment
+        run: |
+          az containerapp show \
+            --name $PORTAL_APP \
+            --resource-group $RESOURCE_GROUP \
+            --query "{Status:properties.runningStatus,Revision:properties.latestRevisionName,Image:properties.template.containers[0].image}" \
+            -o table
+
+      - name: Verify Scanner deployment
+        run: |
+          az containerapp job show \
+            --name $SCANNER_JOB \
+            --resource-group $RESOURCE_GROUP \
+            --query "{Status:properties.runningStatus,Image:properties.template.containers[0].image}" \
+            -o table
