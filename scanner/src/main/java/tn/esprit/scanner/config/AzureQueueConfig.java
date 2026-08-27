@@ -1,5 +1,6 @@
 package tn.esprit.scanner.config;
 
+import com.azure.core.credential.TokenCredential;
 import com.azure.storage.queue.QueueClient;
 import com.azure.storage.queue.QueueClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,12 +12,22 @@ public class AzureQueueConfig {
 
     @Bean
     public QueueClient scanQueueClient(
-            @Value("${securedrop.storage.connection-string}") String connectionString,
-            @Value("${securedrop.storage.scan-queue}") String queueName) {
+            @Value("${securedrop.storage.connection-string:}") String connectionString,
+            @Value("${securedrop.storage.queue-endpoint:}") String queueEndpoint,
+            @Value("${securedrop.storage.scan-queue}") String queueName,
+            TokenCredential azureCredential) {
+
+        if (!connectionString.isBlank()) {
+            return new QueueClientBuilder()
+                    .connectionString(connectionString)
+                    .queueName(queueName)
+                    .buildClient();
+        }
 
         return new QueueClientBuilder()
-                .connectionString(connectionString)
+                .endpoint(queueEndpoint)
                 .queueName(queueName)
+                .credential(azureCredential)
                 .buildClient();
     }
 }
