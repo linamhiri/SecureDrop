@@ -4,7 +4,6 @@ import com.azure.storage.queue.QueueClient;
 import com.azure.storage.queue.models.QueueMessageItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tn.esprit.scanner.dto.ScanRequest;
 import tn.esprit.scanner.service.BlobDispositionService;
@@ -45,8 +44,7 @@ public class ScanQueueWorker {
         this.blobDispositionService = blobDispositionService;
     }
 
-    @Scheduled(fixedDelayString = "${scanner.poll-delay}")
-    public void pollQueue() {
+    public ProcessingOutcome processOneMessage() {
 
         for (QueueMessageItem message : queueClient.receiveMessages(1)) {
 
@@ -221,6 +219,7 @@ public class ScanQueueWorker {
                                 "SCAN RESULT: ERROR - {}",
                                 scanResult.rawResponse()
                         );
+                        return ProcessingOutcome.RETRY;
 
                         /*
                          * Important:
@@ -250,6 +249,7 @@ public class ScanQueueWorker {
                     log.info(
                             "Queue message deleted successfully"
                     );
+                    return ProcessingOutcome.SUCCESS;
                 }
 
                 log.info("======================================");
@@ -268,6 +268,7 @@ public class ScanQueueWorker {
                         message.getMessageId(),
                         e
                 );
+                return ProcessingOutcome.RETRY;
 
             } finally {
 
@@ -296,5 +297,6 @@ public class ScanQueueWorker {
                 }
             }
         }
+        return ProcessingOutcome.NO_MESSAGE;
     }
 }

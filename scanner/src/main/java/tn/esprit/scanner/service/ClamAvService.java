@@ -32,6 +32,50 @@ public class ClamAvService {
         this.readTimeout = readTimeout;
     }
 
+    public void waitUntilReady() throws InterruptedException {
+
+        int maxAttempts = 30;
+        long delayMillis = 2000;
+
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+
+            try (Socket socket = new Socket()) {
+
+                socket.connect(
+                        new InetSocketAddress(host, port),
+                        connectTimeout
+                );
+
+                socket.setSoTimeout(readTimeout);
+
+                OutputStream output = socket.getOutputStream();
+
+                output.write(
+                        "zPING\0"
+                                .getBytes(StandardCharsets.US_ASCII)
+                );
+
+                output.flush();
+
+                String response =
+                        readResponse(socket.getInputStream());
+
+                if ("PONG".equalsIgnoreCase(response.trim())) {
+                    return;
+                }
+
+            } catch (IOException e) {
+                // ClamAV may still be loading its signature database
+            }
+
+            Thread.sleep(delayMillis);
+        }
+
+        throw new IllegalStateException(
+                "ClamAV did not become ready after 60 seconds"
+        );
+    }
+
     public ScanResult scan(Path file) throws IOException {
 
         if (file == null || !Files.exists(file)) {
